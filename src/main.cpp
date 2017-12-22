@@ -106,11 +106,21 @@ int main() {
 
           // calculate the coefficients
           auto coeffs = polyfit(ptsx_eigen, ptsy_eigen, 1);
-          cout << coeffs << endl;
 
+          // calculate cte and epsi
+          double cte = polyeval(coeffs, px) - py;
+          double epsi = psi - atan(coeffs[1]);
 
-          double steer_value;
-          double throttle_value;
+          // create state vector
+          Eigen::VectorXd state(6);
+          state << px, py, psi, v, cte, epsi;
+
+          // get the values
+          auto vars = mpc.Solve(state, coeffs);
+
+          // make sure '-' sign is present for the steering angle
+          double steer_value = -vars[6];
+          double throttle_value = vars[7];
 
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
