@@ -99,14 +99,16 @@ int main() {
           * Both are in between [-1, 1].
           *
           */
-          // convert from vector to Eigen::VectorXd
-          Eigen::VectorXd ptsx_eigen(ptsx.size());
-          Eigen::VectorXd ptsy_eigen(ptsy.size());
-          for (int i=0; i<ptsx.size(); i++) {
-              ptsx_eigen(i) = ptsx[i];
-              ptsy_eigen(i) = ptsy[i];
-          }
+
+          // convert from std::vector to Eigen::VectorXd
+          Eigen::Map<Eigen::VectorXd> ptsx_eigen(&ptsx[0], ptsx.size());
+          Eigen::Map<Eigen::VectorXd> ptsy_eigen(&ptsy[0], ptsy.size());
+
+          // calculate the coefficients
           auto coeffs = polyfit(ptsx_eigen, ptsy_eigen, 1);
+          cout << coeffs << endl;
+
+
           double steer_value;
           double throttle_value;
 
