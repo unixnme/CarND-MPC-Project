@@ -8,6 +8,7 @@
 #include "Eigen-3.3/Eigen/QR"
 #include "MPC.h"
 #include "json.hpp"
+#include <cstdio>
 
 // for convenience
 using json = nlohmann::json;
@@ -98,6 +99,14 @@ int main() {
           * Both are in between [-1, 1].
           *
           */
+          // convert from vector to Eigen::VectorXd
+          Eigen::VectorXd ptsx_eigen(ptsx.size());
+          Eigen::VectorXd ptsy_eigen(ptsy.size());
+          for (int i=0; i<ptsx.size(); i++) {
+              ptsx_eigen(i) = ptsx[i];
+              ptsy_eigen(i) = ptsy[i];
+          }
+          auto coeffs = polyfit(ptsx_eigen, ptsy_eigen, 1);
           double steer_value;
           double throttle_value;
 
