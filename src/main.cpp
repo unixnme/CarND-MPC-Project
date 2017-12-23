@@ -13,6 +13,8 @@
 // for convenience
 using json = nlohmann::json;
 
+const int N = 3;
+
 // For converting back and forth between radians and degrees.
 constexpr double pi() { return M_PI; }
 double deg2rad(double x) { return x * pi() / 180; }
@@ -101,8 +103,8 @@ int main() {
           */
 
           // convert from std::vector to Eigen::VectorXd
-          Eigen::Map<Eigen::VectorXd> ptsx_eigen(&ptsx[0], ptsx.size());
-          Eigen::Map<Eigen::VectorXd> ptsy_eigen(&ptsy[0], ptsy.size());
+          Eigen::Map<Eigen::VectorXd> ptsx_eigen(&ptsx[0], N);
+          Eigen::Map<Eigen::VectorXd> ptsy_eigen(&ptsy[0], N);
 
           // calculate the coefficients
           auto coeffs = polyfit(ptsx_eigen, ptsy_eigen, 1);
@@ -135,18 +137,19 @@ int main() {
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Green line
 
-          msgJson["mpc_x"] = mpc_x_vals;
-          msgJson["mpc_y"] = mpc_y_vals;
-
           //Display the waypoints/reference line
           vector<double> next_x_vals;
           vector<double> next_y_vals;
           // change in coordinate
           for (int i=0; i<ptsx.size(); i++) {
-              double x = ptsx[i] - px;
-              double y = ptsy[i] - py;
-              next_x_vals.push_back(x*cos(-psi) - y*sin(-psi));
-              next_y_vals.push_back(x*sin(-psi) + y*cos(-psi));
+            double x = ptsx[i] - px;
+            double y = ptsy[i] - py;
+            next_x_vals.push_back(x*cos(-psi) - y*sin(-psi));
+            next_y_vals.push_back(x*sin(-psi) + y*cos(-psi));
+            
+            y = polyeval(coeffs, ptsx[i]) - py;
+            mpc_x_vals.push_back(x*cos(-psi) - y*sin(-psi));
+            mpc_y_vals.push_back(x*sin(-psi) + y*cos(-psi));
           }
 
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
@@ -154,6 +157,9 @@ int main() {
 
           msgJson["next_x"] = next_x_vals;
           msgJson["next_y"] = next_y_vals;
+
+          msgJson["mpc_x"] = mpc_x_vals;
+          msgJson["mpc_y"] = mpc_y_vals;
 
 
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
