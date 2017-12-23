@@ -141,6 +141,13 @@ int main() {
           //Display the waypoints/reference line
           vector<double> next_x_vals;
           vector<double> next_y_vals;
+          // change in coordinate
+          for (int i=0; i<ptsx.size(); i++) {
+              double x = ptsx[i] - px;
+              double y = ptsy[i] - py;
+              next_x_vals.push_back(x*cos(-psi) - y*sin(-psi));
+              next_y_vals.push_back(x*sin(-psi) + y*cos(-psi));
+          }
 
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Yellow line
