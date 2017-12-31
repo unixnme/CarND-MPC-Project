@@ -13,7 +13,7 @@
 // for convenience
 using json = nlohmann::json;
 
-const int N = 3;
+const int N = 4;
 
 // For converting back and forth between radians and degrees.
 constexpr double pi() { return M_PI; }
@@ -133,7 +133,7 @@ int main() {
           // calculate the coefficients
           ptsx_eigen(0) = 0;
           ptsy_eigen(0) = 0;
-          auto coeffs = polyfit(ptsx_eigen, ptsy_eigen, 1);
+          auto coeffs = polyfit(ptsx_eigen, ptsy_eigen, 2);
 
             
           for (int i=0; i<ptsx.size(); i++) {
@@ -161,7 +161,7 @@ int main() {
 
           // make sure '-' sign is present for the steering angle
           double steer_value = -vars[6];
-          double throttle_value = vars[7] * .1;
+          double throttle_value = vars[7];
 
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
