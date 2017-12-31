@@ -145,7 +145,7 @@ int main() {
 
 
           // calculate cte and epsi
-          double cte = mpc_y_vals[0];
+          double cte = polyeval(coeffs, 0);
           double epsi = atan(coeffs[1]);
           printf("cte = %f\nepsi = %f\n", cte, epsi);
 

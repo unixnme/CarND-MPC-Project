@@ -7,10 +7,10 @@ using CppAD::AD;
 
 // TODO: Set the timestep length and duration
 const size_t N = 10;
-const double dt = .1;
+const double dt = .10;
 
 // reference veolocity
-const double ref_v = 40;
+const double ref_v = 50;
 
 // The solver takes all the state variables and actuator
 // variables in a singular vector. Thus, we should to establish
