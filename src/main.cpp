@@ -102,12 +102,43 @@ int main() {
           *
           */
 
+
+          //Display the MPC predicted trajectory 
+          vector<double> mpc_x_vals;
+          vector<double> mpc_y_vals;
+
+          //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
+          // the points in the simulator are connected by a Green line
+
+          //Display the waypoints/reference line
+          vector<double> next_x_vals;
+          vector<double> next_y_vals;
+          // change in coordinate
+          for (int i=0; i<ptsx.size(); i++) {
+            double x = ptsx[i] - px;
+            double y = ptsy[i] - py;
+            next_x_vals.push_back(x*cos(-psi) - y*sin(-psi));
+            next_y_vals.push_back(x*sin(-psi) + y*cos(-psi));
+          }
+
           // convert from std::vector to Eigen::VectorXd
-          Eigen::Map<Eigen::VectorXd> ptsx_eigen(&ptsx[0], N);
-          Eigen::Map<Eigen::VectorXd> ptsy_eigen(&ptsy[0], N);
+          Eigen::Map<Eigen::VectorXd> ptsx_eigen(&next_x_vals[0], N);
+          Eigen::Map<Eigen::VectorXd> ptsy_eigen(&next_y_vals[0], N);
 
           // calculate the coefficients
           auto coeffs = polyfit(ptsx_eigen, ptsy_eigen, 1);
+
+            
+          for (int i=0; i<ptsx.size(); i++) {
+            double x = next_x_vals[i];
+            double y = polyeval(coeffs, next_x_vals[i]);
+            mpc_x_vals.push_back(x);
+            mpc_y_vals.push_back(y);
+          }
+
+          //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
+          // the points in the simulator are connected by a Yellow line
+
 
           // calculate cte and epsi
           double cte = polyeval(coeffs, px) - py;
@@ -129,32 +160,6 @@ int main() {
           // Otherwise the values will be in between [-deg2rad(25), deg2rad(25] instead of [-1, 1].
           msgJson["steering_angle"] = steer_value;
           msgJson["throttle"] = throttle_value;
-
-          //Display the MPC predicted trajectory 
-          vector<double> mpc_x_vals;
-          vector<double> mpc_y_vals;
-
-          //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
-          // the points in the simulator are connected by a Green line
-
-          //Display the waypoints/reference line
-          vector<double> next_x_vals;
-          vector<double> next_y_vals;
-          // change in coordinate
-          for (int i=0; i<ptsx.size(); i++) {
-            double x = ptsx[i] - px;
-            double y = ptsy[i] - py;
-            next_x_vals.push_back(x*cos(-psi) - y*sin(-psi));
-            next_y_vals.push_back(x*sin(-psi) + y*cos(-psi));
-            
-            y = polyeval(coeffs, ptsx[i]) - py;
-            mpc_x_vals.push_back(x*cos(-psi) - y*sin(-psi));
-            mpc_y_vals.push_back(x*sin(-psi) + y*cos(-psi));
-          }
-
-          //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
-          // the points in the simulator are connected by a Yellow line
-
           msgJson["next_x"] = next_x_vals;
           msgJson["next_y"] = next_y_vals;
 
