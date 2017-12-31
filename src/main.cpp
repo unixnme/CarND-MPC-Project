@@ -80,7 +80,7 @@ int main() {
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
     string sdata = string(data).substr(0, length);
-    cout << sdata << endl;
+    //cout << sdata << endl;
     if (sdata.size() > 2 && sdata[0] == '4' && sdata[1] == '2') {
       string s = hasData(sdata);
       if (s != "") {
@@ -95,6 +95,7 @@ int main() {
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
 
+          printf("psi = %f\n", psi);
           /*
           * TODO: Calculate steering angle and throttle using MPC.
           *
@@ -122,10 +123,16 @@ int main() {
           }
 
           // convert from std::vector to Eigen::VectorXd
-          Eigen::Map<Eigen::VectorXd> ptsx_eigen(&next_x_vals[0], N);
-          Eigen::Map<Eigen::VectorXd> ptsy_eigen(&next_y_vals[0], N);
+          Eigen::VectorXd ptsx_eigen(N);
+          Eigen::VectorXd ptsy_eigen(N);
+          for (int i=0; i<N; i++) {
+              ptsx_eigen(i) = next_x_vals[i];
+              ptsy_eigen(i) = next_y_vals[i];
+          }
 
           // calculate the coefficients
+          ptsx_eigen(0) = 0;
+          ptsy_eigen(0) = 0;
           auto coeffs = polyfit(ptsx_eigen, ptsy_eigen, 1);
 
             
@@ -141,8 +148,9 @@ int main() {
 
 
           // calculate cte and epsi
-          double cte = polyeval(coeffs, px) - py;
-          double epsi = psi - atan(coeffs[1]);
+          double cte = mpc_y_vals[0];
+          double epsi = atan(coeffs[1]);
+          printf("cte = %f\nepsi = %f\n", cte, epsi);
 
           // create state vector
           Eigen::VectorXd state(6);
@@ -153,7 +161,7 @@ int main() {
 
           // make sure '-' sign is present for the steering angle
           double steer_value = -vars[6];
-          double throttle_value = vars[7];
+          double throttle_value = vars[7] * .1;
 
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
@@ -168,7 +176,7 @@ int main() {
 
 
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
-          std::cout << msg << std::endl;
+          //std::cout << msg << std::endl;
           // Latency
           // The purpose is to mimic real driving conditions where
           // the car does actuate the commands instantly.
