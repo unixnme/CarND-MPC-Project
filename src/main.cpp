@@ -13,7 +13,7 @@
 // for convenience
 using json = nlohmann::json;
 
-const int N = 4;
+const int N = 6;
 
 // For converting back and forth between radians and degrees.
 constexpr double pi() { return M_PI; }
@@ -131,10 +131,7 @@ int main() {
           }
 
           // calculate the coefficients
-          ptsx_eigen(0) = 0;
-          ptsy_eigen(0) = 0;
-          auto coeffs = polyfit(ptsx_eigen, ptsy_eigen, 2);
-
+          auto coeffs = polyfit(ptsx_eigen, ptsy_eigen, 3);
             
           for (int i=0; i<ptsx.size(); i++) {
             double x = next_x_vals[i];
