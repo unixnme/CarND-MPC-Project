@@ -6,8 +6,8 @@
 using CppAD::AD;
 
 // TODO: Set the timestep length and duration
-const size_t N = 10;
-const double dt = .1;
+const size_t N = 25;
+const double dt = 0.05;
 
 // reference veolocity
 const double ref_v = 20;

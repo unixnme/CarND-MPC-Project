@@ -154,7 +154,7 @@ int main() {
 
           // create state vector
           Eigen::VectorXd state(6);
-          state << px, py, psi, v, cte, epsi;
+          state << 0, 0, 0, v, cte, epsi;
 
           // get the values
           auto vars = mpc.Solve(state, coeffs);
